@@ -6,4 +6,5 @@ router
   .route("/")
   .post(usersController.createNewUser)
   .patch(usersController.updateUser);
+router.route(usersController.userLoginSlug).post(usersController.userLogin);
 module.exports = router;

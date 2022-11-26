@@ -6,8 +6,13 @@ const bcrypt = require("bcrypt");
 const createNewUser = asyncHandler(async (req, res) => {
   const { userName, password, telephone, address } = req.body;
 
+  console.log(req.body);
+
   if (!userName || !password) {
-    return res.status(400).json({ message: "All feilds are required" });
+    return res.status(400).json({
+      errorCode: 1,
+      message: "All feilds are required",
+    });
   }
 
   const duplicate = await User.findOne({
@@ -17,7 +22,10 @@ const createNewUser = asyncHandler(async (req, res) => {
     .exec();
 
   if (duplicate) {
-    return res.status(409).json({ message: "Duplicate username" });
+    return res.status(409).json({
+      errorCode: 2,
+      message: "Duplicate username",
+    });
   }
 
   const hashPwd = await bcrypt.hash(password, 10);
@@ -28,10 +36,14 @@ const createNewUser = asyncHandler(async (req, res) => {
 
   if (user) {
     res.status(201).json({
+      errorCode: 0,
       message: `New user ${userName} is created`,
     });
   } else {
-    res.status(400).json({ message: "Invalid user data received" });
+    res.status(400).json({
+      errorCode: 3,
+      message: "Invalid user data received",
+    });
   }
 });
 
@@ -72,7 +84,42 @@ const updateUser = asyncHandler(async (req, res) => {
     message: `${updateUser.userName} has been updated`,
   });
 });
+
+const userLoginSlug = "/login";
+const userLogin = asyncHandler(async (req, res) => {
+  const { userName, password } = req.body;
+  if (!userName || !password) {
+    return res.status(400).json({
+      errorCode: 1,
+      message: "All feild are required",
+    });
+  } else {
+    const user = await User.findOne({
+      userName: userName,
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        errorCode: 2,
+        message: `userName=${userName} not exist`,
+      });
+    } else {
+      const checkPassword = await bcrypt.compare(password, user.password);
+      if (!checkPassword) {
+        return res.status(409).json({
+          errorCode: 3,
+          message: "password incorrect",
+        });
+      } else {
+        return res.status(200).json(user);
+      }
+    }
+  }
+});
+
 module.exports = {
   createNewUser,
   updateUser,
+  userLoginSlug,
+  userLogin,
 };
