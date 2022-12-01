@@ -2,6 +2,7 @@ const User = require("../models/User");
 
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
+const { default: mongoose } = require("mongoose");
 
 const createNewUser = asyncHandler(async (req, res) => {
   const { userName, password, telephone, address } = req.body;
@@ -48,37 +49,42 @@ const createNewUser = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  const { id, userName, telephone, address, password } = req.body;
+  const id = req.params.id;
+  const { password, telephone, address } = req.body;
 
-  if (!id || !userName || !telephone || !address) {
+  if (!telephone || !address || !password) {
     return res.status(400).json({
       message: "All feilds are required",
     });
   }
 
-  const user = await User.findById(id).exec();
+  const hashPwd = await bcrypt.hash(password, 10);
+
+  const userObject = { password: hashPwd, telephone, address };
+
+  const user = await User.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(id) }, userObject).exec();
 
   if (!user) {
     return res.status(400).json({
-      message: "User not found",
+      message: "Update failed",
     });
   }
 
-  const duplicate = await User.findOne({ userName }).lean().exec();
+  // const duplicate = await User.findOne({ userName }).lean().exec();
 
-  if (duplicate && duplicate?._id.toString() !== id) {
-    return res.status(409).json({ message: "Duplicate userName" });
-  }
+  // if (duplicate && duplicate?._id.toString() !== id) {
+  //   return res.status(409).json({ message: "Duplicate userName" });
+  // }
 
-  user.userName = userName;
-  user.telephone = telephone;
-  user.address = address;
+  // user.userName = userName;
+  // user.telephone = telephone;
+  // user.address = address;
 
-  if (password) {
-    user.password = await bcrypt.hash(password, 10);
-  }
+  // if (password) {
+  //   user.password = await bcrypt.hash(password, 10);
+  // }
 
-  const updateUser = await user.save();
+  // const updateUser = await user.save();
 
   return res.json({
     message: `${updateUser.userName} has been updated`,

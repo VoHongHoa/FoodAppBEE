@@ -1,11 +1,13 @@
 const Order = require("../models/Orders");
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
+const { default: mongoose } = require("mongoose");
 
 const getAllOrdersByUserIdSlug = "/:userId";
 const getAllOrdersByUserId = asyncHandler(async (req, res) => {
-  const { userId } = req.body;
-  const orders = await Order.find(userId).lean().exec();
+  const { userId } = req.params;
+  console.log(userId)
+  const orders = await Order.find({ userId: mongoose.Types.ObjectId(userId) }).lean().exec();
   return res.json(orders);
 });
 
