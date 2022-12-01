@@ -5,6 +5,20 @@ const getAllFoodItems = asyncHandler(async (req, res) => {
   return res.json(foodItems);
 });
 
+const createFoodItems = asyncHandler(async (req, res) => {
+  const { categoryID, name, imageUrl, price } = req.body;
+
+  const foodItemsObject = { categoryID, name, imageUrl, price };
+  const newFoodItems = await FoodItems.create(foodItemsObject);
+  if (newFoodItems) {
+    res.status(201).json({
+      message: `New food items is created`,
+    })
+  } else {
+    res.status(400).json({ message: "Invalid food items data received" });
+  }
+});
+
 const getFoodItemByIdSlug = "/findById/:id";
 const getFoodItemById = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -20,6 +34,7 @@ const getFoodItemById = asyncHandler(async (req, res) => {
 
 module.exports = {
   getAllFoodItems,
+  createFoodItems,
   getFoodItemByIdSlug,
   getFoodItemById,
 };
