@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const OrderDetail = require("../models/OrderDetail");
 const Order = require("../models/Orders");
 const FoodItem = require("../models/FoodItems");
@@ -40,6 +41,92 @@ const createOrderDetail = asyncHandler(async (req, res) => {
     }
   }
 });
+
+const getDetailOrderByOrderIdSlug = "/:orderIdParam";
+const getDetailOrderByOrderId = asyncHandler(async (req, res) => {
+  const { orderIdParam } = req.params;
+  const orderId = mongoose.Types.ObjectId(orderIdParam);
+  const detailsOrder = await OrderDetail.aggregate([
+    {
+      $match: {
+        $expr: {
+          $and: [{ $eq: [orderId, "$orderId"] }],
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "fooditems",
+        let: {
+          productId: "$productId",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ["$$productId", "$_id"] }],
+              },
+            },
+          },
+        ],
+        as: "ProductOrder",
+      },
+    },
+    {
+      $unwind: {
+        path: "$ProductOrder",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        productId: 1,
+        categoryId: "$ProductOrder.categoryID",
+        name: "$ProductOrder.name",
+        imageUrl: "$ProductOrder.imageUrl",
+        price: "$ProductOrder.price",
+        quantity: 1,
+      },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        let: {
+          categoryId: "$categoryId",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ["$$categoryId", "$_id"] }],
+              },
+            },
+          },
+        ],
+        as: "Category",
+      },
+    },
+    {
+      $unwind: {
+        path: "$Category",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        productId: 1,
+        categoryName: "$Category.categoryName",
+        name: 1,
+        imageUrl: 1,
+        price: 1,
+        quantity: 1,
+      },
+    },
+  ]);
+  return res.status(200).json(detailsOrder);
+});
 module.exports = {
   createOrderDetail,
+  getDetailOrderByOrderId,
+  getDetailOrderByOrderIdSlug,
 };
