@@ -13,7 +13,7 @@ const createFoodItems = asyncHandler(async (req, res) => {
   if (newFoodItems) {
     res.status(201).json({
       message: `New food items is created`,
-    })
+    });
   } else {
     res.status(400).json({ message: "Invalid food items data received" });
   }
@@ -32,9 +32,34 @@ const getFoodItemById = asyncHandler(async (req, res) => {
   }
 });
 
+const getFoodItemsByCategoryIdSlug = "/findByCategoryId/:categoryId";
+const getFoodItemsByCategoryId = asyncHandler(async (req, res) => {
+  const { categoryId } = req.params;
+  const foodItem = await FoodItems.find({
+    categoryID: categoryId,
+  });
+  return res.json(foodItem);
+});
+
+const getLastedFoodItemsSlug = "/find-last-foodItems";
+const getLastedFoodItems = asyncHandler(async (req, res) => {
+  const { numOfFoodItems } = req.query;
+  let lastedFoodItems = [];
+  if (numOfFoodItems) {
+    lastedFoodItems = await FoodItems.find().limit(numOfFoodItems);
+  } else {
+    lastedFoodItems = await FoodItems.find().limit(5);
+  }
+  return res.json(lastedFoodItems);
+});
+
 module.exports = {
   getAllFoodItems,
   createFoodItems,
   getFoodItemByIdSlug,
   getFoodItemById,
+  getFoodItemsByCategoryIdSlug,
+  getFoodItemsByCategoryId,
+  getLastedFoodItemsSlug,
+  getLastedFoodItems,
 };

@@ -10,4 +10,10 @@ router
 router
   .route(foodItemsController.getFoodItemByIdSlug)
   .get(foodItemsController.getFoodItemById);
+router
+  .route(foodItemsController.getFoodItemsByCategoryIdSlug)
+  .get(foodItemsController.getFoodItemsByCategoryId);
+router
+  .route(foodItemsController.getLastedFoodItemsSlug)
+  .get(foodItemsController.getLastedFoodItems);
 module.exports = router;
