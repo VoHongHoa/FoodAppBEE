@@ -16,4 +16,7 @@ router
 router
   .route(foodItemsController.getLastedFoodItemsSlug)
   .get(foodItemsController.getLastedFoodItems);
+router
+  .route(foodItemsController.searchFoodItemsSlug)
+  .get(foodItemsController.searchFoodItems);
 module.exports = router;

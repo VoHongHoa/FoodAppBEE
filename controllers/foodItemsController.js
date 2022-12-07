@@ -53,6 +53,19 @@ const getLastedFoodItems = asyncHandler(async (req, res) => {
   return res.json(lastedFoodItems);
 });
 
+const searchFoodItemsSlug = "/search";
+const searchFoodItems = asyncHandler(async (req, res) => {
+  const { keyword } = req.body;
+  const results = await FoodItems.find({
+    $or: [
+      { name: { $regex: keyword, $options: "i" } },
+      { price: { $regex: keyword, $options: "i" } },
+    ],
+  });
+
+  return res.status(200).json(results);
+});
+
 module.exports = {
   getAllFoodItems,
   createFoodItems,
@@ -62,4 +75,6 @@ module.exports = {
   getFoodItemsByCategoryId,
   getLastedFoodItemsSlug,
   getLastedFoodItems,
+  searchFoodItemsSlug,
+  searchFoodItems,
 };
