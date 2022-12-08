@@ -28,10 +28,14 @@ const createOrder = asyncHandler(async (req, res) => {
       const newOrder = await Order.create(orderObject);
       if (newOrder) {
         res.status(201).json({
-          message: `New order is created`,
+          errorCode: 0,
+          message: newOrder._id,
         });
       } else {
-        res.status(400).json({ message: "Invalid order data received" });
+        res.status(400).json({
+          errorCode: 1,
+          message: "Invalid order data received",
+        });
       }
     }
   }

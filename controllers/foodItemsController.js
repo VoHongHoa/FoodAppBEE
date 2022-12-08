@@ -55,7 +55,7 @@ const getLastedFoodItems = asyncHandler(async (req, res) => {
 
 const searchFoodItemsSlug = "/search";
 const searchFoodItems = asyncHandler(async (req, res) => {
-  const { keyword } = req.body;
+  const { keyword } = req.query;
   const results = await FoodItems.find({
     $or: [
       { name: { $regex: keyword, $options: "i" } },
