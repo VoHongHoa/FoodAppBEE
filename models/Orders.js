@@ -10,8 +10,16 @@ const OrdersSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    address: {
+      type: String,
+      require: false,
+    },
+    telephone: {
+      type: String,
+      require: false,
+    },
     status: {
-      type: Boolean,
+      type: String,
       default: false,
     },
   },
