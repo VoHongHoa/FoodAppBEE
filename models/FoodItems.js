@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const FoodItemsSchema = new mongoose.Schema({
   categoryID: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     require: true,
   },
   name: {
@@ -24,6 +24,14 @@ const FoodItemsSchema = new mongoose.Schema({
   price: {
     type: String,
     require: true,
+  },
+  like: {
+    type: [mongoose.Schema.Types.ObjectId],
+    default: [],
+  },
+  numOfUserLike: {
+    type: Number,
+    default: 0,
   },
 });
 

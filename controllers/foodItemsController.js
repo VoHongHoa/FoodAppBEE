@@ -1,5 +1,7 @@
 const FoodItems = require("../models/FoodItems");
 const asyncHandler = require("express-async-handler");
+const { default: mongoose } = require("mongoose");
+const User = require("../models/User");
 const getAllFoodItems = asyncHandler(async (req, res) => {
   const foodItems = await FoodItems.find().lean().exec();
   return res.json(foodItems);
@@ -66,6 +68,54 @@ const searchFoodItems = asyncHandler(async (req, res) => {
   return res.status(200).json(results);
 });
 
+const likeFoodItemsSlug = "/like-fooditems/:foodItemIParam";
+const likeFoodItems = asyncHandler(async (req, res) => {
+  const { foodItemIParam } = req.params;
+  const { userId } = req.body;
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(400).json({
+      errorCode: 1,
+      message: "Người dùng không tồn tại",
+    });
+  }
+  const foodItemId = mongoose.Types.ObjectId(foodItemIParam);
+
+  await FoodItems.findByIdAndUpdate(foodItemId, {
+    $push: { like: mongoose.Types.ObjectId(userId) },
+  });
+  await FoodItems.findByIdAndUpdate(foodItemId, {
+    $inc: { numOfUserLike: 1 },
+  });
+  res
+    .status(200)
+    .json({ errorCode: 0, message: "Yêu thích sản phẩm thành công" });
+});
+
+const unlikeFoodItemsSlug = "/unlike-fooditems/:foodItemIParam";
+const unlikeFoodItems = asyncHandler(async (req, res) => {
+  const { foodItemIParam } = req.params;
+  const { userId } = req.body;
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(400).json({
+      errorCode: 1,
+      message: "Người dùng không tồn tại",
+    });
+  }
+  const foodItemId = mongoose.Types.ObjectId(foodItemIParam);
+
+  await FoodItems.findByIdAndUpdate(foodItemId, {
+    $pull: { like: mongoose.Types.ObjectId(userId) },
+  });
+  await FoodItems.findByIdAndUpdate(foodItemId, {
+    $inc: { numOfUserLike: -1 },
+  });
+  res
+    .status(200)
+    .json({ errorCode: 0, message: "Bỏ yêu thích sản phẩm thành công" });
+});
+
 module.exports = {
   getAllFoodItems,
   createFoodItems,
@@ -77,4 +127,8 @@ module.exports = {
   getLastedFoodItems,
   searchFoodItemsSlug,
   searchFoodItems,
+  likeFoodItemsSlug,
+  likeFoodItems,
+  unlikeFoodItemsSlug,
+  unlikeFoodItems,
 };

@@ -19,4 +19,10 @@ router
 router
   .route(foodItemsController.searchFoodItemsSlug)
   .get(foodItemsController.searchFoodItems);
+router
+  .route(foodItemsController.likeFoodItemsSlug)
+  .patch(foodItemsController.likeFoodItems);
+router
+  .route(foodItemsController.unlikeFoodItemsSlug)
+  .patch(foodItemsController.unlikeFoodItems);
 module.exports = router;

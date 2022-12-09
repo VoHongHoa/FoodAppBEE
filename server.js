@@ -30,6 +30,8 @@ app.use("/categories", require("./routes/categoriesRoures"));
 app.use("/foodItems", require("./routes/foodItemsRoutes"));
 app.use("/orders", require("./routes/ordersRoutes"));
 app.use("/order-detail", require("./routes/ordersDetailRoutes"));
+app.use("/favourite", require("./routes/favouriteBagsRoutes"));
+app.use("/favourite-items", require("./routes/favouriteItemsRoutes"));
 
 app.all("*", (req, res) => {
   res.status(404);

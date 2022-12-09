@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const OrdersSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       require: true,
     },
     total: {

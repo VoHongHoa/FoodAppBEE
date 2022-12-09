@@ -1,5 +1,5 @@
 const User = require("../models/User");
-
+const FavouriteBags = require("../models/FavouriteBags");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const { default: mongoose } = require("mongoose");
@@ -12,7 +12,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   if (!userName || !password) {
     return res.status(400).json({
       errorCode: 1,
-      message: "All feilds are required",
+      message: "Vui lòng điền đầy đủ các trường cần thiết",
     });
   }
 
@@ -25,7 +25,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   if (duplicate) {
     return res.status(409).json({
       errorCode: 2,
-      message: "Duplicate username",
+      message: "Tên người dùng đã được sử dụng",
     });
   }
 
@@ -36,6 +36,10 @@ const createNewUser = asyncHandler(async (req, res) => {
   const user = await User.create(userObject);
 
   if (user) {
+    const favouriteBagObj = {
+      userId: user._id,
+    };
+    await FavouriteBags.create(favouriteBagObj);
     res.status(201).json({
       errorCode: 0,
       message: `New user ${userName} is created`,
@@ -62,7 +66,10 @@ const updateUser = asyncHandler(async (req, res) => {
 
   const userObject = { password: hashPwd, telephone, address };
 
-  const user = await User.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(id) }, userObject).exec();
+  const user = await User.findByIdAndUpdate(
+    { _id: mongoose.Types.ObjectId(id) },
+    userObject
+  ).exec();
 
   if (!user) {
     return res.status(400).json({
