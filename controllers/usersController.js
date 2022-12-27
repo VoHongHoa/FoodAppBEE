@@ -12,7 +12,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   if (!userName || !password) {
     return res.status(400).json({
       errorCode: 1,
-      message: "All feilds are required",
+      message: "Vui lòng nhập đầy đủ thông tin",
     });
   }
 
@@ -25,7 +25,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   if (duplicate) {
     return res.status(409).json({
       errorCode: 2,
-      message: "Duplicate username",
+      message: "Username đã tồn tại",
     });
   }
 
@@ -38,7 +38,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   if (user) {
     res.status(201).json({
       errorCode: 0,
-      message: `New user ${userName} is created`,
+      message: `Người dùng ${userName} được tạo thành công`,
     });
   } else {
     res.status(400).json({
@@ -54,7 +54,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
   if (!telephone || !address || !password) {
     return res.status(400).json({
-      message: "All feilds are required",
+      message: "Vui lòng nhập đầy đủ thông tin",
     });
   }
 
@@ -97,7 +97,7 @@ const userLogin = asyncHandler(async (req, res) => {
   if (!userName || !password) {
     return res.status(400).json({
       errorCode: 1,
-      message: "All feild are required",
+      message: "Vui lòng nhập đầy đủ thông tin",
     });
   } else {
     const user = await User.findOne({

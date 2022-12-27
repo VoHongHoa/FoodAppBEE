@@ -2,6 +2,7 @@ const Order = require("../models/Orders");
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 const { default: mongoose } = require("mongoose");
+const moment = require("moment/moment");
 
 const getAllOrdersByUserIdSlug = "/:userId";
 const getAllOrdersByUserId = asyncHandler(async (req, res) => {
@@ -51,6 +52,11 @@ const getAllOrdersByUserId = asyncHandler(async (req, res) => {
       },
     },
   ]);
+
+  orders.map((order) => {
+    order.createdAt = moment(order.createdAt).format('lll')
+  })
+
   return res.status(200).json(orders);
 });
 
